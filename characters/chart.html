@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>히라가나 / 가타카나 50음도</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <style>
+        body { font-family: 'Pretendard', sans-serif; overflow: hidden; /* 전체 스크롤 방지 */ }
+        
+        /* 드래그 영역 스타일 */
+        #image-container {
+            cursor: grab; /* 손바닥 커서 */
+            overflow: hidden; /* 넘치는 이미지 숨김 */
+            touch-action: none; /* 모바일 제스처 충돌 방지 (필요시) */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+        }
+        
+        #image-container:active {
+            cursor: grabbing; /* 잡은 커서 */
+        }
+
+        #chart-image {
+            transition: transform 0.1s linear; /* 드래그 반응성을 위해 짧게 설정 */
+            max-width: 100%;
+            max-height: 100%;
+            user-select: none; /* 드래그 시 파란색 블록 잡히는 것 방지 */
+            -webkit-user-drag: none; /* 이미지 자체 드래그 방지 */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 h-screen flex flex-col">
+
+    <div class="flex-shrink-0 text-center py-4 bg-white shadow-sm z-10">
+        <h2 class="text-xl font-bold text-gray-800">50음도표</h2>
+        <p class="text-rose-500 text-sm font-medium">ひらがな・カタカナ</p>
+    </div>
+
+    <div id="image-container" class="flex-grow relative w-full h-full bg-gray-100">
+        <img id="chart-image" src="kana.jpeg" alt="히라가나 가타카나 표">
+    </div>
+
+    <div class="absolute top-20 left-0 right-0 text-center pointer-events-none">
+        <span class="bg-black/50 text-white text-xs px-3 py-1 rounded-full">
+            PC: 드래그하여 이동 / 모바일: 손가락 줌
+        </span>
+    </div>
+
+    <div class="fixed bottom-6 right-6 flex flex-col gap-2 z-50">
+        <button onclick="zoomIn()" class="bg-white text-gray-700 p-3 rounded-full shadow-lg border border-gray-200 hover:bg-rose-50 hover:text-rose-600 active:bg-rose-100 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+        </button>
+        <button onclick="resetZoom()" class="bg-white text-gray-700 p-3 rounded-full shadow-lg border border-gray-200 hover:bg-indigo-50 hover:text-indigo-600 active:bg-indigo-100 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+        </button>
+        <button onclick="zoomOut()" class="bg-white text-gray-700 p-3 rounded-full shadow-lg border border-gray-200 hover:bg-blue-50 hover:text-blue-600 active:bg-blue-100 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />
+            </svg>
+        </button>
+    </div>
+
+   <script>
+        const img = document.getElementById('chart-image');
+        const container = document.getElementById('image-container');
+
+        let scale = 1;
+        let pointX = 0;
+        let pointY = 0;
+        let startX = 0;
+        let startY = 0;
+        let isDragging = false;
+
+        // 핀치 줌을 위한 변수
+        let initialDistance = 0;
+        let initialScale = 1;
+
+        // 화면 갱신 함수
+        function updateTransform() {
+            img.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+        }
+
+        // --- 버튼 줌 기능 ---
+        function zoomIn() {
+            if (scale < 5) {
+                scale += 0.25;
+                updateTransform();
+            }
+        }
+
+        function zoomOut() {
+            if (scale > 0.5) {
+                scale -= 0.25;
+                updateTransform();
+            }
+        }
+
+        function resetZoom() {
+            scale = 1;
+            pointX = 0;
+            pointY = 0;
+            updateTransform();
+        }
+
+        // --- PC 마우스 이벤트 (드래그) ---
+        container.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            isDragging = true;
+            startX = e.clientX - pointX;
+            startY = e.clientY - pointY;
+        });
+
+        container.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            pointX = e.clientX - startX;
+            pointY = e.clientY - startY;
+            updateTransform();
+        });
+
+        container.addEventListener('mouseup', () => { isDragging = false; });
+        container.addEventListener('mouseleave', () => { isDragging = false; });
+
+        // --- PC 마우스 휠 줌 ---
+        container.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (e.deltaY < 0) zoomIn();
+            else zoomOut();
+        }, { passive: false });
+
+
+        // =========================================
+        //  📱 모바일 터치 이벤트 (추가된 부분)
+        // =========================================
+
+        // 두 손가락 사이의 거리를 구하는 함수 (피타고라스 정의)
+        function getDistance(touches) {
+            const dx = touches[0].clientX - touches[1].clientX;
+            const dy = touches[0].clientY - touches[1].clientY;
+            return Math.hypot(dx, dy);
+        }
+
+        container.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                // 손가락 1개: 드래그 시작
+                isDragging = true;
+                startX = e.touches[0].clientX - pointX;
+                startY = e.touches[0].clientY - pointY;
+            } else if (e.touches.length === 2) {
+                // 손가락 2개: 핀치 줌 시작
+                isDragging = false; // 줌 중에는 드래그 중지
+                initialDistance = getDistance(e.touches);
+                initialScale = scale;
+            }
+        });
+
+        container.addEventListener('touchmove', (e) => {
+            e.preventDefault(); // 브라우저 기본 스크롤 방지
+
+            if (e.touches.length === 1 && isDragging) {
+                // 손가락 1개: 이동 (Pan)
+                pointX = e.touches[0].clientX - startX;
+                pointY = e.touches[0].clientY - startY;
+                updateTransform();
+
+            } else if (e.touches.length === 2) {
+                // 손가락 2개: 확대/축소 (Pinch Zoom)
+                const currentDistance = getDistance(e.touches);
+                if (initialDistance > 0) {
+                    // 거리 비율에 따라 스케일 조절
+                    const diff = currentDistance / initialDistance;
+                    let newScale = initialScale * diff;
+
+                    // 최소/최대 스케일 제한
+                    newScale = Math.max(0.5, Math.min(newScale, 5));
+                    
+                    scale = newScale;
+                    updateTransform();
+                }
+            }
+        }, { passive: false });
+
+        container.addEventListener('touchend', () => {
+            isDragging = false;
+            initialDistance = 0;
+        });
+
+    </script>
+</body>
+</html>

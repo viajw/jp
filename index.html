@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>일본어 학습 홈</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+            
+            /* 1. 단어: #404e54 */
+            --color-word: #404e54;
+            --color-bg-word: #edf0f2; 
+
+            /* 2. 문장: #997b50 */
+            --color-sentence: #997b50;
+            --color-bg-sentence: #f8f5f0; 
+
+            /* 3. 가나 & 간지 (기존 퀴즈 색상): #be9630 */
+            --color-kana-new: #be9630;
+            --color-bg-kana-new: #fbf9f2; 
+
+            /* 4. 즐겨찾기 (기존 가나 색상): #827e73 */
+            --color-fav: #827e73;
+            --color-bg-fav: #f4f3f1; 
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            /* 기본 폰트: Pretendard */
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* 헤더 스타일 */
+        header {
+            text-align: center;
+            padding: 3rem 1rem 2rem;
+            background-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            color: #142c45;
+            margin-bottom: 0.2rem;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        /* 아이콘 색상 (#841e24) */
+        header h1 i {
+            color: #841e24;
+            margin-right: 0.5rem;
+        }
+
+        header p {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-weight: 600; 
+            color: #142c4591; 
+            font-size: 1.5rem;
+            letter-spacing: 0.05em;
+            margin-top: 0;
+        }
+
+        /* 메인 레이아웃 */
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0 1rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* 카드 스타일 */
+        .card {
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* 카드 헤더 */
+        .card-header {
+            padding: 0.8rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: white; 
+        }
+
+        .card-header h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            /* Flexbox 적용: 양 끝 정렬 */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%; 
+        }
+
+        /* 카드 헤더 내부 일본어 텍스트 스타일 */
+        .card-header h2 span {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        .icon-box {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        
+        /* 카드 헤더 아이콘: 아웃라인 스타일 */
+        .icon-box i {
+            -webkit-text-fill-color: transparent; 
+            -webkit-text-stroke: 2px white;
+        }
+
+        /* 리스트 스타일 */
+        .link-list {
+            list-style: none;
+            padding: 0.2rem 0;
+        }
+
+        .link-list li a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            color: #4b5563; /* 기본 색상 */
+            transition: background-color 0.2s, color 0.2s;
+            font-size: 1rem;
+        }
+
+        /* 특정 중요 메뉴 Bold 처리 클래스 */
+        .link-list li a.bold-item {
+            font-weight: 700;
+            color: #374151; /* 조금 더 진한 회색으로 강조 */
+        }
+
+        .link-list li a i {
+            margin-right: 1rem;
+            font-size: 1rem;
+            opacity: 0.6;
+            width: 24px;
+            text-align: center;
+            -webkit-text-fill-color: initial;
+            -webkit-text-stroke: initial;
+        }
+
+        /* 테마별 색상 적용 */
+        
+        /* 1. 단어 (#404e54) */
+        .theme-word .card-header { background-color: var(--color-word); }
+        .theme-word .link-list li a:hover { background-color: var(--color-bg-word); color: var(--color-word); }
+        .theme-word .link-list li a:hover i { opacity: 1; color: var(--color-word); }
+
+        /* 2. 문장 (#997b50) */
+        .theme-sentence .card-header { background-color: var(--color-sentence); }
+        .theme-sentence .link-list li a:hover { background-color: var(--color-bg-sentence); color: var(--color-sentence); }
+        .theme-sentence .link-list li a:hover i { opacity: 1; color: var(--color-sentence); }
+
+        /* 3. 가나 & 간지 (구 퀴즈 색상 #be9630) */
+        .theme-kana-new .card-header { background-color: var(--color-kana-new); }
+        .theme-kana-new .link-list li a:hover { background-color: var(--color-bg-kana-new); color: var(--color-kana-new); }
+        .theme-kana-new .link-list li a:hover i { opacity: 1; color: var(--color-kana-new); }
+
+        /* 4. 즐겨찾기 (구 가나 색상 #827e73) */
+        .theme-fav .card-header { background-color: var(--color-fav); }
+        .theme-fav .link-list li a:hover { background-color: var(--color-bg-fav); color: var(--color-fav); }
+        .theme-fav .link-list li a:hover i { opacity: 1; color: var(--color-fav); }
+
+        /* 푸터 스타일 */
+        footer {
+            text-align: center;
+            padding: 2rem 0 3rem;
+            color: #9ca3af;
+            font-size: 0.85rem;
+            font-weight: 400;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><i class="fas fa-torii-gate"></i> 일본어 학습</h1>
+        <p>日本語学習</p>
+    </header>
+
+    <main class="container">
+        <article class="card theme-word">
+            <div class="card-header">
+                <div class="icon-box"><i class="fas fa-book-open"></i></div>
+                <h2>단어 <span>単語</span></h2>
+            </div>
+            <ul class="link-list">
+                <li>
+                    <a href="words/voca-list.html" class="bold-item">
+                        <i class="fas fa-list"></i> 단어장
+                    </a>
+                </li>
+                <li>
+                    <a href="words/voca-list-old.html">
+                        <i class="fas fa-history"></i> 단어장 (예전)
+                    </a>
+                </li>
+                <li>
+                    <a href="words/voca-flash-timer.html" class="bold-item">
+                        <i class="fas fa-stopwatch"></i> 단어 플래시카드 (타이머)
+                    </a>
+                </li>
+                <li>
+                    <a href="words/voca-flash.html">
+                        <i class="fas fa-layer-group"></i> 단어 플래시카드
+                    </a>
+                </li>
+                <li>
+                    <a href="words/voca-flash-custom.html">
+                        <i class="fas fa-user-edit"></i> 나만의 단어 플래시카드
+                    </a>
+                </li>
+                <li>
+                    <a href="words/voca-quiz.html" class="bold-item">
+                        <i class="fas fa-puzzle-piece"></i> 단어 퀴즈
+                    </a>
+                </li>
+                <li>
+                    <a href="words/voca-quiz-custom.html">
+                        <i class="fas fa-user-cog"></i> 나만의 단어 퀴즈
+                    </a>
+                </li>
+            </ul>
+        </article>
+
+        <article class="card theme-sentence">
+            <div class="card-header">
+                <div class="icon-box"><i class="fas fa-comment-dots"></i></div>
+                <h2>문장 <span>文章</span></h2>
+            </div>
+            <ul class="link-list">
+                <li>
+                    <a href="sentences/sentence-list.html" class="bold-item">
+                        <i class="fas fa-align-left"></i> 문장 연습
+                    </a>
+                </li>
+                <li>
+                    <a href="sentences/sentence-flash-timer.html" class="bold-item">
+                        <i class="fas fa-clock"></i> 문장 플래시카드 (타이머)
+                    </a>
+                </li>
+                <li>
+                    <a href="sentences/sentence-flash.html">
+                        <i class="fas fa-clone"></i> 문장 플래시카드
+                    </a>
+                </li>
+            </ul>
+        </article>
+
+        <article class="card theme-kana-new">
+            <div class="card-header">
+                <div class="icon-box"><i class="fas fa-pen-nib"></i></div>
+                <h2>가나 & 간지 <span>かな & 漢字</span></h2>
+            </div>
+            <ul class="link-list">
+                <li>
+                    <a href="characters/chart.html" class="bold-item">
+                        <i class="fas fa-table"></i> 히라가나 / 가타카나
+                    </a>
+                </li>
+                <li>
+                    <a href="characters/kana-to-romaji-option.html">
+                        <i class="fas fa-th-list"></i> 가나 → 로마자 (선택)
+                    </a>
+                </li>
+                <li>
+                    <a href="characters/kana-to-romaji-typing.html">
+                        <i class="fas fa-keyboard"></i> 가나 → 로마자 (타이핑)
+                    </a>
+                </li>
+                <li>
+                    <a href="characters/word-to-romaji-typing.html">
+                        <i class="fas fa-spell-check"></i> 단어 → 로마자 (타이핑)
+                    </a>
+                </li>
+                <li>
+                    <a href="characters/romaji-to-kana-option.html">
+                        <i class="fas fa-exchange-alt"></i> 로마자 → 가나 (선택)
+                    </a>
+                </li>
+            </ul>
+        </article>
+
+        <article class="card theme-fav">
+            <div class="card-header">
+                <div class="icon-box"><i class="fas fa-star"></i></div>
+                <h2>즐겨찾기 <span>お気に入り</span></h2>
+            </div>
+            <ul class="link-list">
+                <li>
+                    <a href="https://ja.dict.naver.com/" target="_blank">
+                        <i class="fas fa-book"></i> 네이버 일본어 사전
+                    </a>
+                </li>
+                <li>
+                    <a href="https://papago.naver.com" target="_blank">
+                        <i class="fas fa-language"></i> 네이버 파파고
+                    </a>
+                </li>
+                <li>
+                    <a href="https://translate.google.com/" target="_blank">
+                        <i class="fab fa-google"></i> 구글 번역
+                    </a>
+                </li>
+            </ul>
+        </article>
+
+    </main>
+
+    <footer>
+        made by jw
+    </footer>
+
+</body>
+</html>
