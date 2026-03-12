@@ -510,16 +510,16 @@
             const cleanText = tempDiv.textContent || tempDiv.innerText || "";
             const len = cleanText.length;
 
-            if (len <= 4) {
-                return "text-6xl sm:text-8xl"; 
-            } else if (len <= 8) {
-                return "text-5xl sm:text-7xl"; 
+            if (len <= 3) {
+                return "text-6xl sm:text-7xl"; 
+            } else if (len <= 6) {
+                return "text-5xl sm:text-6xl"; 
+            } else if (len <= 10) {
+                return "text-4xl sm:text-5xl"; // "ちゅうごくじん"은 여기에 해당하여 적절히 조절됩니다.
             } else if (len <= 15) {
-                return "text-3xl sm:text-5xl"; 
-            } else if (len <= 30) {
-                return "text-2xl sm:text-3xl"; 
+                return "text-3xl sm:text-4xl"; 
             } else {
-                return "text-lg sm:text-xl";   
+                return "text-xl sm:text-2xl";   
             }
         }
 
@@ -696,9 +696,9 @@
             const frontSizeClass = getFontSizeClass(currentMode === 'word-to-meaning' ? rawWord : frontContent);
             const backSizeClass = getFontSizeClass(currentMode === 'word-to-meaning' ? backContent : rawWord);
 
-            // [수정 2] flex 제거 및 텍스트 블록 정렬로 변경
-            cardFrontContent.className = `font-bold text-center break-keep w-full mt-4 mb-8 leading-normal ${frontSizeClass}`;
-            cardBackContent.className = `font-medium text-center break-keep w-full mt-4 mb-8 leading-normal ${backSizeClass}`;
+            // [수정] break-keep 대신 break-all을 사용하고, 양옆 여백(px-4)을 강제합니다.
+            cardFrontContent.className = `font-bold text-center break-all w-full px-4 leading-tight ${frontSizeClass}`;
+            cardBackContent.className = `font-medium text-center break-all w-full px-4 leading-tight ${backSizeClass}`;
 
             cardFrontContent.innerHTML = frontContent;
             cardBackContent.innerHTML = backContent;
